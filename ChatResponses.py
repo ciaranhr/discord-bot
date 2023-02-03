@@ -4,7 +4,12 @@ import asyncio
 import os
 import re
 
-async def getweather(location) :
+class BotActions:
+    def __init__(self) -> None:
+        pass
+
+
+async def get_weather(location):
     async with python_weather.Client(format=python_weather.METRIC) as client:
         try:
             weather = await client.get(location)
@@ -27,8 +32,10 @@ async def response_handler(message) -> str:
     if message.startswith('weather'): 
         try:
             location = message.split()[1]
-            return await getweather(location)
+            return await get_weather(location)
         except Exception as e:
             print(e)
     if message == 'yoga':
-        pass
+        return "definitely not implemented"
+    if message == 'trivia':
+        return "very not done yet thanks"

@@ -2,7 +2,12 @@ import ChatResponses
 import discord
 
 class UsefulBot():
+    """A simple bot able to respond to some commands with meaninful actions"""
     def __init__(self, token) -> None:
+        """
+        parameters:
+        token: discord token to connect to a server
+        """
         self.token = token
     
     async def send_message(self, user_message, message):
@@ -16,7 +21,7 @@ class UsefulBot():
         
 
     def run_useful_bot(self):
-        """run UsefulBot using existing token in .env"""
+        """run UsefulBot using an existing token"""
         intents = discord.Intents.default()
         intents.message_content = True
         client = discord.Client(intents=intents)
