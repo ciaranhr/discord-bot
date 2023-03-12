@@ -1,3 +1,5 @@
 .env
 config.py
 BotExample.py
+*.pyc
+__pycache__/
