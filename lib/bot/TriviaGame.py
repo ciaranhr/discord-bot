@@ -2,7 +2,7 @@ import requests
 import mysql.connector
 from mysql.connector import errorcode
 import html
-import db
+from ..db import db
 
 trivia_url_base = 'https://opentdb.com/api.php?'
 
@@ -18,7 +18,7 @@ def retrieve_trivia(num, difficulty):
         unescaped = []
         for dict in trivia_response['results']:
             for k in dict:
-                k = html.unescape(k)
+                dict[k] = html.unescape(dict[k])
             unescaped.append(dict)        
         return unescaped
     else:
@@ -26,45 +26,68 @@ def retrieve_trivia(num, difficulty):
 
 
 class Question():
-    def __init__(self, question, answers) -> None:
+    """
+    Questions that can be stored in a Trivia Game and asked of users of the game
+    Answers able to be retreived for a given question, """
+    def __init__(self, question: str, answers: list, difficulty: int, type: str) -> None:
         self.question = question
         self.answers = answers
-        self.correct_a = answers[1]
-        self.incorrect_a = answers[0]
+        self.correct = answers[1]
+        self.incorrect = answers[0]
+        self.difficulty = difficulty
+        self.type = type
 
-    def combine_q_a(self):
-        pass
+    def get_q(self):
+        """returns: string of question"""
+        return self.question
+    
+    def get_correct(self):
+        """returns: string of correct answer"""
+        return self.correct
+    
+    def get_incorrect(self):
+        """returns: array of strings of incorrect answers"""
+        return self.incorrect
+    
+    def get_all(self):
+        """returns: string containig correct and incorrect answers"""
+        combined = {self.question:self.answers}
+        return combined
+    
+    def get_difficulty(self):
+        """returns: difficulty of the question"""
+        return self.difficulty
+    
+    def __str__(self):
+        return "% s" % (self.question)
 
-
+    def __repr__(self):
+        return "%s" % (self.question)
+    
 class Trivia():
     def __init__(self, trivia_json) -> None:
         self.trivia_json = trivia_json
-        self.difficulty = self.make_difficulty()
         self.questions = self.get_questions()
-        self.scores = self.make_scores()
 
-    def get_questions(self):
-        """retrieve questions """
-        qs_dict = {i['question']:[i['incorrect_answers'], i['correct_answer']] for i in self.trivia_json}
-        return qs_dict
-
-    def make_difficulty(self):
-        difficulty = {i['question']:i['difficulty'] for i in self.trivia_json}
+    def get_questions(self) -> list:
+        """retrieve questions from json of api
+         return: list of questions"""
+        difficulties = {i['question']:i['difficulty'] for i in self.trivia_json}
         conversion = {'easy': 1, 'medium': 2, 'hard': 3}
         
-        for k, v in difficulty.items():
-            difficulty[k] = conversion[v]
-        return difficulty
-    
-    def get_difficulty(self):
-        return self.difficulty
-    
-    def get_scores(self):
-        return self.scores
+        for k, v in difficulties.items():
+            difficulties[k] = conversion[v]
 
-    def make_scores(self):
-        scores = {k:v*2 for (k, v) in self.difficulty.items()}
-        return scores
+        questions = []
+        for i in self.trivia_json:
+                answers = [i['correct_answer'], i['incorrect_answers']]
+                question = i['question']
+                difficulty = difficulties[question]
+                type = i['type']
+                questions.append(Question(question, answers, difficulty, type))
+
+        return questions
+    
 
     def input_questions():
         stmt = "INSERT INTO questions ()"

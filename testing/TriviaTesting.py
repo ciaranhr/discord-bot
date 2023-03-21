@@ -12,4 +12,3 @@ if __name__ == '__main__':
 
     t = TriviaGame.Trivia(text)
     print("questions = {}\n".format(t.get_questions()))
-    print("difficulties: {}\n".format(t.get_difficulty()))
