@@ -2,7 +2,7 @@ import discord
 import python_weather
 import random
 
-
+###Moving into cogs
 def check_users(bot:discord.Client) -> dict:
     """check users that are in server for some bot
         return: a dictionary of the format {member name: date_joined}
@@ -12,7 +12,7 @@ def check_users(bot:discord.Client) -> dict:
     return users
 
 async def response_handler(message, bot:discord.Client) -> str:
-    """from a given str message return a str response"""
+    """from a str message return a str response"""
     if message == 'hello' or message == 'Hello':
         return 'Hello, idiot'
     if message == 'roll':

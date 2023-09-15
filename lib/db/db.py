@@ -58,3 +58,4 @@ def execute(command, *values):
 def multiexec(command, valueset):
     cur.executemany(command, valueset)
 
+

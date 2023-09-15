@@ -2,7 +2,10 @@
 A simple discord chat bot, handles some greetings and adds some fun functionality to the guild it is in.
 
 ### Currently working on:
--Trivia game using a MySQL database
+-building trivia DB
+-Populating Trivia Questions
+-Trivia game using a MySQL database running as an asynchronous event loop when called through the bot
+- 
 
 ### Future stuff
 -Some weather :/
