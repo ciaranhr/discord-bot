@@ -62,7 +62,7 @@ class Question():
         return combined
     
     def get_difficulty(self):
-        """returns: difficulty of the question"""
+        """returns: integer difficulty of the question"""
         return self._difficulty
     
     def __str__(self):
@@ -102,11 +102,12 @@ class TriviaProcessing():
     def input_questions(self, num:int):
         """input a specific number of questions that have been processing"""
         if num > len(self._questions):
+
             raise Exception
         
         insert_question = ("INSERT INTO discordinfo.questions "
-                "(type, level, trivia_score, content) " 
-                "VALUES (%s %s %s %s)" )            
+                "(question_id, type, level, trivia_score, content) " 
+                "VALUES (%s, %s, %s, %s, %s)" )            
 
         insert_answers = ("INSERT INTO discordinfo.answers"
                           "(question_id, correct, content)"
@@ -115,20 +116,36 @@ class TriviaProcessing():
         q_id = 1
         question_data = []
         answer_data = []
-        for i in self._questions[:num]:
-            print("question is %s" % i)
-            print("answers are correct %s" % (i.get_correct()))
-            question_data.append((i.get_type(), i.get_difficulty(), i.get_difficulty()*3, i.get_q()))
+        for i in self._questions[:num]: 
+            question_data.append((q_id, i.get_type(), i.get_difficulty(), i.get_difficulty()*3, i.get_q()))
             answer_data.append((q_id, 1, i.get_correct()))
             for j in i.get_incorrect():
                 answer_data.append((q_id, 0, j))
             q_id+= 1
-        
+       
         db.multiexec(insert_question, question_data)
         db.multiexec(insert_answers, answer_data)
+        db.commit()
+       
         
-        def delete_questions(self, num):
-            pass
+    def clear_questions(self, question_ids=None):
+        delete_all_q = ("DELETE FROM discordinfo.questions WHERE question_id > 0")
+        delete_all_a = ("DELETE FROM discordinfo.answers WHERE question_id > 0")
+        
+        delete_some = ("DELETE FROM discordinfo.questions"
+                       "WHERE question_id = %s")
+        
+        if question_ids == None:
+            db.execute(delete_all_q)
+            db.execute(delete_all_a)
+        else:
+            db.multiexec(delete_some, question_ids)
+        db.commit()
+      
+
+
+
+            
 
 
 

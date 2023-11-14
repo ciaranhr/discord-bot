@@ -4,7 +4,7 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-import lib.bot.config as config
+import bot.config as config
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -16,6 +16,7 @@ db = config.credentials.get_db()
 try:
     cnx = mysql.connector.connect(host=host, user=user, port=3306, password=password, db=db)
     cur = cnx.cursor()
+    print("cur created")
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
         print("Something is wrong with your user name or password")
@@ -57,5 +58,9 @@ def execute(command, *values):
 
 def multiexec(command, valueset):
     cur.executemany(command, valueset)
+
+    
+
+
 
 

@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from lib.bot import TriviaGameProcessing
 import unittest
-
+import lib.db.db as db
 
 
 
@@ -35,8 +35,9 @@ class TriviaTests(unittest.TestCase):
 
 if __name__ == '__main__':
     print("populating trivia db")
-    trivia = TriviaGameProcessing.TriviaProcessing(TriviaGameProcessing.retrieve_trivia(10, "easy"))
-    trivia.input_questions(10)
-    unittest.main()
+    trivia = TriviaGameProcessing.TriviaProcessing(mock_json)
+    trivia.clear_questions()
+    trivia.input_questions(5)
+    
     
 
