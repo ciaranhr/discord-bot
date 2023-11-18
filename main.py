@@ -23,7 +23,7 @@ async def main():
     intents.members = True
 
     db_connection = await aiomysql.create_pool(host=host, user=user, port=3306, password=password, db=db)
-    exts = ['lib.cogs.greeting'] 
+    exts = ['lib.cogs.greeting', 'lib.cogs.TriviaGame'] 
     async with DiscordBot.UsefulBot(command_prefix='!', intents=intents, trivia_pool=db_connection, initial_extensions=exts) as bot:
         await bot.start(token)
     # @bot.event

@@ -43,7 +43,6 @@ class UsefulBot(commands.Bot):
             counter += 1
             users = self.check_users()
             await channel.send(counter)
-            await channel.send(users)
             await asyncio.sleep(180)  # task runs every 60 seconds
     
     def check_users(self) -> dict:

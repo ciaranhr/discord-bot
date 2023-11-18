@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import html
 from ..db import db
+import random
 
 trivia_url_base = 'https://opentdb.com/api.php?'
 
@@ -28,7 +29,7 @@ def retrieve_trivia(num, difficulty):
 
 
 class Question():
-    """A Question that is to be stored in a TriviaProcessing and asked of users of the game
+    """A Question that is to be stored in Trivia and asked of users of the game
     Answers are able to be retreived for the question
     Answers are able to be checked against correct answer"""
 
@@ -70,7 +71,9 @@ class Question():
 
     def __repr__(self):
         return "%s" % (self._question)
+    
 
+    
 def parse_questions(trivia_json:str) -> list:
     """retrieve questions from json of api
         return: list of questions"""
@@ -89,51 +92,51 @@ def parse_questions(trivia_json:str) -> list:
             questions.append(Question(question, answers, difficulty, type))
     return questions
 
-class TriviaProcessing():
-    """Processing and populating a trivia game based on some input json"""
-    def __init__(self, trivia_json) -> None: 
-        self._trivia_json = trivia_json
+class Trivia:
+    """class containing trivia information and methods to move trivia information to and from database"""
+    def __init__(self, trivia_json):
         self._questions = parse_questions(trivia_json)
+        self._numq = len(self._questions)
 
-    def get_questions(self):
-        """return Questions stored from json"""
-        return self._questions
+    def input_questions(self):
+        """input a specific number of questions that have been processed
+        input: number of questions to take
+        default value is all quesitons"""
 
-    def input_questions(self, num:int):
-        """input a specific number of questions that have been processing"""
-        if num > len(self._questions):
-
-            raise Exception
-        
         insert_question = ("INSERT INTO discordinfo.questions "
                 "(question_id, type, level, trivia_score, content) " 
                 "VALUES (%s, %s, %s, %s, %s)" )            
 
         insert_answers = ("INSERT INTO discordinfo.answers"
-                          "(question_id, correct, content)"
-                          "VALUES (%s, %s, %s)") 
+                            "(question_id, correct, content)"
+                            "VALUES (%s, %s, %s)") 
         
         q_id = 1
         question_data = []
         answer_data = []
+        num = self._numq
+
         for i in self._questions[:num]: 
             question_data.append((q_id, i.get_type(), i.get_difficulty(), i.get_difficulty()*3, i.get_q()))
             answer_data.append((q_id, 1, i.get_correct()))
             for j in i.get_incorrect():
                 answer_data.append((q_id, 0, j))
             q_id+= 1
-       
+        
         db.multiexec(insert_question, question_data)
         db.multiexec(insert_answers, answer_data)
         db.commit()
-       
         
+
+    def new_questions(self, trivia_json):
+        self._questions = parse_questions(trivia_json)
+
     def clear_questions(self, question_ids=None):
         delete_all_q = ("DELETE FROM discordinfo.questions WHERE question_id > 0")
         delete_all_a = ("DELETE FROM discordinfo.answers WHERE question_id > 0")
         
         delete_some = ("DELETE FROM discordinfo.questions"
-                       "WHERE question_id = %s")
+                        "WHERE question_id = %s")
         
         if question_ids == None:
             db.execute(delete_all_q)
@@ -141,6 +144,17 @@ class TriviaProcessing():
         else:
             db.multiexec(delete_some, question_ids)
         db.commit()
+
+
+    def get_random_question(self):
+        r = random.randint(1, self._numq)
+        get_q = ("SELECT content FROM discordinfo.questions WHERE question_id = %s")
+        question = db.field(get_q, r)
+
+        return question
+        
+
+
       
 
 

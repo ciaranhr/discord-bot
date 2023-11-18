@@ -16,7 +16,7 @@ class TriviaTests(unittest.TestCase):
     
     def setUp(self) -> None:
         self._text = TriviaGameProcessing.retrieve_trivia(5, "hard")
-        self._trivia =TriviaGameProcessing.TriviaProcessing(mock_json)
+        self._trivia =TriviaGameProcessing.Trivia(mock_json)
         
 
     def test_retrieval(self):
@@ -35,9 +35,10 @@ class TriviaTests(unittest.TestCase):
 
 if __name__ == '__main__':
     print("populating trivia db")
-    trivia = TriviaGameProcessing.TriviaProcessing(mock_json)
+    trivia = TriviaGameProcessing.Trivia(mock_json)
     trivia.clear_questions()
-    trivia.input_questions(5)
+    trivia.input_questions()
+    print(trivia.get_random_question())
     
     
 
